@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Observación de Conductas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Fuente predeterminada de Tailwind */
+        }
+        .question-group h2 {
+            border-bottom: 2px solid #e5e7eb; /* gris claro */
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem; /* Equivalente a text-2xl */
+            font-weight: 600; /* Equivalente a font-semibold */
+        }
+        .question-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem; /* mb-3 */
+            padding: 0.75rem; /* p-3 */
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #f9fafb; /* gray-50 */
+        }
+        .question-item input[type="checkbox"] {
+            margin-right: 0.75rem; /* mr-3 */
+            height: 1.25rem; /* h-5 */
+            width: 1.25rem; /* w-5 */
+            accent-color: #3b82f6; /* blue-500 */
+        }
+        .question-item label {
+            flex-grow: 1; /* Permite que la etiqueta ocupe el espacio restante y el texto se ajuste */
+            word-break: break-word; /* Asegura que el texto largo no rompa el layout */
+        }
+        /* Estilo para el botón de descarga */
+        #downloadButton {
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 md:p-8">
+    <!-- Contenedor principal con ancho máximo y centrado automático para pantallas grandes,
+         ocupará el ancho disponible en pantallas pequeñas. El padding (p-6 md:p-8) también es adaptable. -->
+    <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-xl">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-600">Hoja de Observación de Conductas</h1>
+            <p class="text-gray-600 mt-2">Marca "Sí" si la conducta o característica se observa. Déjala sin marcar para "No".</p>
+        </header>
+
+        <div class="mb-6 p-4 border border-blue-200 rounded-lg bg-blue-50">
+            <h2 class="text-xl font-semibold text-blue-700 mb-3">Información General</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="observerName" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Observador(a):</label>
+                    <input type="text" id="observerName" name="observerName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="observationPlace" class="block text-sm font-medium text-gray-700 mb-1">Lugar/Tienda Observada:</label>
+                    <input type="text" id="observationPlace" name="observationPlace" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="observationDateTime" class="block text-sm font-medium text-gray-700 mb-1">Fecha y Hora:</label>
+                    <input type="datetime-local" id="observationDateTime" name="observationDateTime" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="storeNSE" class="block text-sm font-medium text-gray-700 mb-1">Nivel Socioeconómico (NSE) de la Tienda:</label>
+                    <select id="storeNSE" name="storeNSE" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Seleccione NSE</option>
+                        <option value="Alto">Alto</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Bajo">Bajo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <form id="conductForm">
+            <section class="question-group">
+                <h2 class="text-2xl font-semibold text-gray-700">Conductas de las Personas (Observar a un comprador)</h2>
+                <!-- Los .question-item son flex containers, lo que ayuda a que el checkbox y la etiqueta se alineen
+                     y el texto de la etiqueta se ajuste si es necesario en pantallas pequeñas. -->
+                <div class="question-item">
+                    <input type="checkbox" id="c9_ccps" data-category="C9" data-question="En el carrito/canasta que observas, ¿la persona lleva más cosas saludables?">
+                    <label for="c9_ccps">C9: En el carrito/canasta que observas, ¿la persona lleva más cosas saludables?</label>
+                </div>
+                 <div class="question-item">
+                    <input type="checkbox" id="c9_ccpns" data-category="C9" data-question="En el carrito/canasta que observas, ¿la persona lleva más cosas no saludables (ultraprocesados)?">
+                    <label for="c9_ccpns">C9: En el carrito/canasta que observas, ¿la persona lleva más cosas no saludables (ultraprocesados)?</label>
+                </div>
+
+                <div class="question-item">
+                    <input type="checkbox" id="c10_bll" data-category="C10" data-question="¿La persona usa una lista (en papel o celular) para comprar?">
+                    <label for="c10_bll">C10: ¿La persona usa una lista (en papel o celular) para comprar?</label>
+                </div>
+                <div class="question-item">
+                    <input type="checkbox" id="c10_bld" data-category="C10" data-question="¿La persona va directo a buscar las cosas sin parecer usar una lista?">
+                    <label for="c10_bld">C10: ¿La persona va directo a buscar las cosas sin parecer usar una lista?</label>
+                </div>
+
+                <div class="question-item">
+                    <input type="checkbox" id="c11_ips" data-category="C11" data-question="¿La persona le pregunta o pide opinión a quien la acompaña sobre qué comprar?">
+                    <label for="c11_ips">C11: ¿La persona le pregunta o pide opinión a quien la acompaña sobre qué comprar?</label>
+                </div>
+                <div class="question-item">
+                    <input type="checkbox" id="c11_ipi" data-category="C11" data-question="¿La persona compra cosas que ve que otros llevan o que su acompañante le dice/agarra?">
+                    <label for="c11_ipi">C11: ¿La persona compra cosas que ve que otros llevan o que su acompañante le dice/agarra?</label>
+                </div>
+
+                <div class="question-item">
+                    <input type="checkbox" id="c12_rps" data-category="C12" data-question="¿La persona se detiene a comparar precios entre productos parecidos antes de elegir uno?">
+                    <label for="c12_rps">C12: ¿La persona se detiene a comparar precios entre productos parecidos antes de elegir uno?</label>
+                </div>
+                 <div class="question-item">
+                    <input type="checkbox" id="c12_rpn" data-category="C12" data-question="¿La persona agarra los productos rápidamente sin parecer fijarse mucho en el precio o comparar con otros?">
+                    <label for="c12_rpn">C12: ¿La persona agarra los productos rápidamente sin parecer fijarse mucho en el precio o comparar con otros?</label>
+                </div>
+            </section>
+
+            <div class="mt-10 text-center">
+                <button type="button" id="downloadButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Descargar Resultados (XLSX)
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Event listener para el botón de descarga
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            // Recopilar información general
+            const observerName = document.getElementById('observerName').value || 'No especificado';
+            const observationPlace = document.getElementById('observationPlace').value || 'No especificado';
+            const observationDateTime = document.getElementById('observationDateTime').value || 'No especificado';
+            const storeNSE = document.getElementById('storeNSE').value || 'No especificado';
+
+            // Preparar los datos para el archivo Excel
+            const data = [
+                ["Información General", ""],
+                ["Nombre del Observador(a):", observerName],
+                ["Lugar Observado:", observationPlace],
+                ["Fecha y Hora:", observationDateTime],
+                ["NSE de la Tienda:", storeNSE],
+                [], // Fila vacía como separador
+                ["Código Conducta", "ID Pregunta", "Pregunta/Observación", "Respuesta (Sí/No)"] // Encabezados
+            ];
+
+            // Recopilar datos de los checkboxes de la sección de conductas
+            const checkboxes = document.querySelectorAll('#conductForm input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const categoryCode = checkbox.dataset.category;
+                const questionText = checkbox.dataset.question; 
+                const id = checkbox.id;
+                const answer = checkbox.checked ? 'Sí' : 'No';
+                data.push([categoryCode, id, questionText, answer]);
+            });
+
+            // Crear el libro de trabajo y la hoja
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados_Observacion');
+
+            // Ajustar anchos de columnas
+            worksheet['!cols'] = [
+                { wch: 20 }, // Código Conducta
+                { wch: 15 }, // ID Pregunta
+                { wch: 100 },// Pregunta/Observación (ajustado para texto más largo)
+                { wch: 20 }  // Respuesta (Sí/No)
+            ];
+            
+            // Generar y descargar el archivo XLSX
+            const now = new Date();
+            // Formatear el timestamp para el nombre del archivo
+            const timestamp = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+            XLSX.writeFile(workbook, `Resultados_Observacion_Conductas_${timestamp}.xlsx`);
+        });
+    </script>
+</body>
+</html>
