@@ -34,18 +34,15 @@
             accent-color: #3b82f6; /* blue-500 */
         }
         .question-item label {
-            flex-grow: 1; /* Permite que la etiqueta ocupe el espacio restante y el texto se ajuste */
-            word-break: break-word; /* Asegura que el texto largo no rompa el layout */
+            flex-grow: 1; 
+            word-break: break-word; 
         }
-        /* Estilo para el botón de descarga */
         #downloadButton {
             transition: background-color 0.3s ease;
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4 md:p-8">
-    <!-- Contenedor principal con ancho máximo y centrado automático para pantallas grandes,
-         ocupará el ancho disponible en pantallas pequeñas. El padding (p-6 md:p-8) también es adaptable. -->
     <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-xl">
         <header class="mb-8 text-center">
             <h1 class="text-3xl md:text-4xl font-bold text-blue-600">Hoja de Observación de Conductas</h1>
@@ -56,12 +53,21 @@
             <h2 class="text-xl font-semibold text-blue-700 mb-3">Información General</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label for="observerName" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Observador(a):</label>
-                    <input type="text" id="observerName" name="observerName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <label for="observerNameSelect" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Observador(a):</label>
+                    <select id="observerNameSelect" name="observerNameSelect" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Seleccione Observador(a)</option>
+                        <option value="Erick Alexis Rojas Garay">Erick Alexis Rojas Garay</option>
+                        <option value="Ingrid Camila Rojas Garay">Ingrid Camila Rojas Garay</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="observationPlace" class="block text-sm font-medium text-gray-700 mb-1">Lugar/Tienda Observada:</label>
-                    <input type="text" id="observationPlace" name="observationPlace" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <label for="observationPlaceSelect" class="block text-sm font-medium text-gray-700 mb-1">Lugar/Tienda Observada:</label>
+                    <select id="observationPlaceSelect" name="observationPlaceSelect" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Seleccione Tienda</option>
+                        <option value="HEB Santa Mónica" data-nse="Alto">HEB Santa Mónica (NSE Alto)</option>
+                        <option value="Walmart Mahatma Gandhi" data-nse="Medio">Walmart Mahatma Gandhi (NSE Medio)</option>
+                        <option value="Bodega Aurrera Mariano Hidalgo" data-nse="Bajo">Bodega Aurrera Mariano Hidalgo (NSE Bajo)</option>
+                    </select>
                 </div>
                 <div>
                     <label for="observationDateTime" class="block text-sm font-medium text-gray-700 mb-1">Fecha y Hora:</label>
@@ -82,8 +88,6 @@
         <form id="conductForm">
             <section class="question-group">
                 <h2 class="text-2xl font-semibold text-gray-700">Conductas de las Personas (Observar a un comprador)</h2>
-                <!-- Los .question-item son flex containers, lo que ayuda a que el checkbox y la etiqueta se alineen
-                     y el texto de la etiqueta se ajuste si es necesario en pantallas pequeñas. -->
                 <div class="question-item">
                     <input type="checkbox" id="c9_ccps" data-category="C9" data-question="En el carrito/canasta que observas, ¿la persona lleva más cosas saludables?">
                     <label for="c9_ccps">C9: En el carrito/canasta que observas, ¿la persona lleva más cosas saludables?</label>
@@ -130,26 +134,42 @@
     </div>
 
     <script>
+        // Referencias a los elementos select
+        const observerNameSelect = document.getElementById('observerNameSelect'); // Nueva referencia para el select de observador
+        const observationPlaceSelect = document.getElementById('observationPlaceSelect');
+        const storeNSESelect = document.getElementById('storeNSE');
+
+        // Event listener para actualizar el NSE cuando cambia la tienda seleccionada
+        observationPlaceSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const nse = selectedOption.dataset.nse; 
+
+            if (nse) {
+                storeNSESelect.value = nse;
+            } else {
+                storeNSESelect.value = ""; 
+            }
+        });
+
         // Event listener para el botón de descarga
         document.getElementById('downloadButton').addEventListener('click', function() {
             // Recopilar información general
-            const observerName = document.getElementById('observerName').value || 'No especificado';
-            const observationPlace = document.getElementById('observationPlace').value || 'No especificado';
+            const observerName = observerNameSelect.value || 'No especificado'; // Obtener valor del select de observador
+            const observationPlace = observationPlaceSelect.value || 'No especificado'; 
             const observationDateTime = document.getElementById('observationDateTime').value || 'No especificado';
-            const storeNSE = document.getElementById('storeNSE').value || 'No especificado';
+            const storeNSE = storeNSESelect.value || 'No especificado';
 
             // Preparar los datos para el archivo Excel
             const data = [
                 ["Información General", ""],
-                ["Nombre del Observador(a):", observerName],
-                ["Lugar Observado:", observationPlace],
+                ["Nombre del Observador(a):", observerName], // Usar el valor del select de observador
+                ["Lugar Observado:", observationPlace], 
                 ["Fecha y Hora:", observationDateTime],
                 ["NSE de la Tienda:", storeNSE],
-                [], // Fila vacía como separador
-                ["Código Conducta", "ID Pregunta", "Pregunta/Observación", "Respuesta (Sí/No)"] // Encabezados
+                [], 
+                ["Código Conducta", "ID Pregunta", "Pregunta/Observación", "Respuesta (Sí/No)"] 
             ];
 
-            // Recopilar datos de los checkboxes de la sección de conductas
             const checkboxes = document.querySelectorAll('#conductForm input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 const categoryCode = checkbox.dataset.category;
@@ -159,22 +179,40 @@
                 data.push([categoryCode, id, questionText, answer]);
             });
 
-            // Crear el libro de trabajo y la hoja
             const worksheet = XLSX.utils.aoa_to_sheet(data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados_Observacion');
 
-            // Ajustar anchos de columnas
             worksheet['!cols'] = [
-                { wch: 20 }, // Código Conducta
-                { wch: 15 }, // ID Pregunta
-                { wch: 100 },// Pregunta/Observación (ajustado para texto más largo)
-                { wch: 20 }  // Respuesta (Sí/No)
+                { wch: 25 }, // Ajustado para Nombre del Observador
+                { wch: 30 }, // Ajustado para Lugar Observado
+                { wch: 20 }, // Fecha y Hora 
+                { wch: 15 }, // NSE
+                // Las siguientes columnas son para las preguntas
+                // { wch: 20 }, // Código Conducta (se solapa con la primera de info general si no se maneja bien)
+                // { wch: 15 }, // ID Pregunta
+                // { wch: 100 },// Pregunta/Observación
+                // { wch: 20 }  // Respuesta (Sí/No)
+            ];
+             // Para asegurar que las columnas de las preguntas también tengan un ancho definido,
+            // y no se sobrescriban con las de información general, se pueden definir todas explícitamente
+            // o empezar a definir anchos desde la primera columna de la sección de preguntas.
+            // Aquí, asumimos que las primeras 4 columnas son para la info general y las siguientes para las preguntas.
+            // Si la estructura de 'data' cambia, esto podría necesitar ajuste.
+            // Por simplicidad, vamos a definir anchos para las columnas de la sección de preguntas
+            // asumiendo que comienzan después de la información general.
+            // Sin embargo, aoa_to_sheet crea una estructura donde las preguntas van debajo,
+            // por lo que el ancho se aplica a la columna en general.
+
+            // Re-definiendo anchos de columna para Excel para que se apliquen correctamente
+             worksheet['!cols'] = [
+                { wch: 30 }, // Columna A (Información General / Código Conducta)
+                { wch: 30 }, // Columna B (Valores de Info General / ID Pregunta)
+                { wch: 100 },// Columna C (Pregunta/Observación - solo para la sección de preguntas)
+                { wch: 20 }  // Columna D (Respuesta Sí/No - solo para la sección de preguntas)
             ];
             
-            // Generar y descargar el archivo XLSX
             const now = new Date();
-            // Formatear el timestamp para el nombre del archivo
             const timestamp = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
             XLSX.writeFile(workbook, `Resultados_Observacion_Conductas_${timestamp}.xlsx`);
         });
